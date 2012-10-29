@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -8,6 +9,8 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:text="@string/output_method"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -15,54 +18,97 @@
         android:id="@+id/xmlCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
         android:text="@string/xml" />
 
     <CheckBox
         android:id="@+id/viewCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/xmlCB"
         android:text="@string/view" />
 
     <CheckBox
         android:id="@+id/dialogCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/viewCB"
         android:text="@string/dialog" />
 
     <CheckBox
         android:id="@+id/audioCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dialogCB"
         android:text="@string/audiofile" />
 
     <CheckBox
         android:id="@+id/ttsCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/audioCB"
         android:text="@string/tts" />
 
     <CheckBox
         android:id="@+id/emailCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ttsCB"
         android:text="@string/email" />
 
     <CheckBox
         android:id="@+id/phoneCallCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/emailCB"
         android:text="@string/phoneCall" />
 
     <CheckBox
         android:id="@+id/smsCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/phoneCallCB"
         android:text="@string/sms" />
 
     <CheckBox
         android:id="@+id/fileCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/smsCB"
         android:text="@string/file" />
 
-</LinearLayout>
+    <CheckBox
+        android:id="@+id/internetCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/fileCB"
+        android:text="@string/internet" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="34dp"
+        android:text="@string/next" />
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/nextButton"
+        android:text="@string/reset" />
+
+</RelativeLayout>

@@ -40,6 +40,33 @@ A program for reading all sensor values and display them in many ways
 
 Application:
 	Start screen: user selects sensors which he wants to display, 
-...
+
 	User selects output methods
+
 	Computing...
+
+
+Temperature: User can type in or use his actual location (GPS)
+
+AirPressure: same
+
+Internet-Output: generate .HTML file and open it in browser
+
+Camera: show most seen color
+
+TTS: speak in system default language
+
+Microphone: show dB
+
+
+
+Realtime Outputs: View, Dialog
+
+Sensors:
+
+	* Movement --> Linear Accelerometer
+
+	* Accelerometer --> Accelerometer
+
+	* Magnet -->
+	
