@@ -2,10 +2,14 @@ package com.example.androidsensors;
 
 
 import java.util.ArrayList;
+
+import com.example.androidsensors.R.id;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 public class AndroidSensors extends Activity {
 	ArrayList<String> options = new ArrayList<String>();
@@ -17,7 +21,7 @@ public class AndroidSensors extends Activity {
     }
     
     public void start(View view){
-    	
+    	int i = ((ViewGroup)view.getParent()).getChildCount();    	
     }
 
     @Override
