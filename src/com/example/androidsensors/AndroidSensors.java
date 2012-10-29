@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 public class AndroidSensors extends Activity {
@@ -19,14 +18,12 @@ public class AndroidSensors extends Activity {
     }
     
     public void start(View view){
-    	int count = ((ViewGroup)view.getParent()).getChildCount();
-    	CheckBox v;
     	int first = R.id.movementCB;
-    	int second = R.id.accelerometerCB;
-    	for(int i = 0; i < count; i++){    		
-    		if( (v=(CheckBox)findViewById(i)) != null){
+    	CheckBox v;
+    	while((v=(CheckBox)findViewById(first)) != null){   		
+    		if(v.isChecked())
     			options.add(v.getText()+"");
-    		}    			
+    		first++;
     	}
     }
 
