@@ -3,12 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="34dp"
+        android:onClick="start"
+        android:text="@string/next" />
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/buttonNext"
+        android:text="@string/reset" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/select_input"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
     <CheckBox
         android:id="@+id/movementCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/textView1"
         android:text="@string/movement" />
 
     <CheckBox
@@ -63,7 +90,7 @@
         android:id="@+id/microphoneCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/airPressureCB"
         android:layout_below="@+id/lightCB"
         android:text="@string/micophone" />
 
@@ -71,7 +98,7 @@
         android:id="@+id/cameraCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/microphoneCB"
         android:layout_below="@+id/microphoneCB"
         android:text="@string/camera" />
 
@@ -79,26 +106,8 @@
         android:id="@+id/gpsCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/cameraCB"
-        android:text="@string/gps" />
-
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/resetButton"
         android:layout_alignRight="@+id/lightCB"
-        android:text="@string/reset" />
-
-    <Button
-        android:id="@+id/buttonNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="34dp"
-        android:onClick="start"
-        android:text="@string/next" />
+        android:text="@string/gps" />
 
 </RelativeLayout>
