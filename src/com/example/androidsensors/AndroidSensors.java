@@ -24,6 +24,15 @@ public class AndroidSensors extends Activity {
     		if(v.isChecked())
     			options.add(v.getText()+"");
     		first++;
+    	}    	 
+    }
+    
+    public void reset(View view){
+    	int first = R.id.movementCB;
+    	CheckBox v;
+    	while((v=(CheckBox)findViewById(first)) != null){   		
+    		v.setChecked(false);
+    		first++;
     	}
     }
 
