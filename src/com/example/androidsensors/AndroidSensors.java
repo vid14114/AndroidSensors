@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 public class AndroidSensors extends Activity {
 	ArrayList<String> options = new ArrayList<String>();
@@ -24,8 +25,11 @@ public class AndroidSensors extends Activity {
     		if(v.isChecked())
     			options.add(v.getText()+"");
     		first++;
-    	}    	 
-    	setContentView(R.layout.output_methods);
+    	}   
+    	if(options.size()==0)
+    		Toast.makeText(getApplicationContext(), "Select at least one sensor", Toast.LENGTH_SHORT).show();
+    	else
+    		setContentView(R.layout.output_methods);
     }
     
     public void inputReset(View view){
