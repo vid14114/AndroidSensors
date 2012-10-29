@@ -22,11 +22,10 @@ public class PhoneSensor extends Activity implements SensorEventListener{
 	public static float[] movementDirection;
 	public static float[] accelerometer;
 	public static float[] magnet;
-	public static float[] direction;
 	public static float[] temperature;
 	public static float[] light;
 	
-	
+	//register only sensors the user needs
 	public PhoneSensor(ArrayList<String> options){
 		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
