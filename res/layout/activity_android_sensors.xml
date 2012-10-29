@@ -4,13 +4,100 @@
     android:layout_height="match_parent" >
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/movementCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="22dp"
-        android:layout_marginTop="18dp"
-        android:text="CheckBox" />
+        android:text="@string/movement" />
+
+    <CheckBox
+        android:id="@+id/accelerometerCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/movementCB"
+        android:text="@string/accelerometer" />
+
+    <CheckBox
+        android:id="@+id/magnetCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/accelerometerCB"
+        android:text="@string/magnet" />
+
+    <CheckBox
+        android:id="@+id/directionCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/magnetCB"
+        android:text="@string/direction" />
+
+    <CheckBox
+        android:id="@+id/airPressureCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/directionCB"
+        android:text="@string/air_pressure" />
+
+    <CheckBox
+        android:id="@+id/temperatureCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/airPressureCB"
+        android:text="@string/temperature" />
+
+    <CheckBox
+        android:id="@+id/lightCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/temperatureCB"
+        android:text="@string/light" />
+
+    <CheckBox
+        android:id="@+id/microphoneCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/lightCB"
+        android:text="@string/micophone" />
+
+    <CheckBox
+        android:id="@+id/cameraCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/microphoneCB"
+        android:text="@string/camera" />
+
+    <CheckBox
+        android:id="@+id/gpsCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/cameraCB"
+        android:text="@string/gps" />
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/lightCB"
+        android:text="@string/reset" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="34dp"
+        android:text="@string/next" />
 
 </RelativeLayout>

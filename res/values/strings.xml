@@ -4,5 +4,17 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_android_sensors">AndroidSensors</string>
+    <string name="movement">Movement</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="magnet">Magnet</string>
+    <string name="direction">Direction</string>
+    <string name="air_pressure">Air Pressure</string>
+    <string name="temperature">Temperature</string>
+    <string name="light">Light</string>
+    <string name="micophone">Microphone</string>
+    <string name="camera">Camera</string>
+    <string name="gps">GPS</string>
+    <string name="reset">Reset</string>
+    <string name="next">Next</string>
 
 </resources>
