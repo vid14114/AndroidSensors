@@ -36,3 +36,10 @@ A program for reading all sensor values and display them in many ways
 	* (Kamera)
 
 ()... nice to have
+
+
+Application:
+	Start screen: user selects sensors which he wants to display, 
+...
+	User selects output methods
+	Computing...
