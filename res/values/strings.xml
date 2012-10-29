@@ -27,5 +27,6 @@
     <string name="phoneCall">Phone Call</string>
     <string name="sms">SMS</string>
     <string name="file">File</string>
+    <string name="internet">Internet</string>
 
 </resources>
