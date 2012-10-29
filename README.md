@@ -57,3 +57,16 @@ Camera: show most seen color
 TTS: speak in system default language
 
 Microphone: show dB
+
+
+
+Realtime Outputs: View, Dialog
+
+Sensors:
+
+	* Movement --> Linear Accelerometer
+
+	* Accelerometer --> Accelerometer
+
+	* Magnet -->
+	
