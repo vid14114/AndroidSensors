@@ -2,8 +2,6 @@ package com.example.androidsensors;
 
 
 import java.util.ArrayList;
-
-import com.example.androidsensors.R.id;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -21,7 +19,15 @@ public class AndroidSensors extends Activity {
     }
     
     public void start(View view){
-    	int i = ((ViewGroup)view.getParent()).getChildCount();    	
+    	int count = ((ViewGroup)view.getParent()).getChildCount();
+    	CheckBox v;
+    	int first = R.id.movementCB;
+    	int second = R.id.accelerometerCB;
+    	for(int i = 0; i < count; i++){    		
+    		if( (v=(CheckBox)findViewById(i)) != null){
+    			options.add(v.getText()+"");
+    		}    			
+    	}
     }
 
     @Override
