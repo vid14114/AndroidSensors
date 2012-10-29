@@ -106,8 +106,8 @@
         android:id="@+id/gpsCB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/resetButton"
-        android:layout_alignRight="@+id/lightCB"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/cameraCB"
         android:text="@string/gps" />
 
 </RelativeLayout>
