@@ -24,6 +24,7 @@ public class PhoneSensor extends Activity implements SensorEventListener{
 	public static float[] accelerometer;
 	public static float[] magnet;
 	public static float[] direction;
+	public static float[] pressure;
 	public static float[] temperature;
 	public static float[] light;
 	
@@ -56,6 +57,8 @@ public class PhoneSensor extends Activity implements SensorEventListener{
 			magnet = event.values;
 		if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION);
 			direction = event.values;
+		if(event.sensor.getType() == Sensor.TYPE_PRESSURE)
+				pressure = event.values;
 		if(event.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE);
 			temperature = event.values;
 		if(event.sensor.getType() == Sensor.TYPE_LIGHT)
