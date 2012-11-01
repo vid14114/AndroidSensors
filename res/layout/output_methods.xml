@@ -101,6 +101,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="34dp"
+        android:onClick="outputNext"
         android:text="@string/next" />
 
     <Button
@@ -109,6 +110,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/nextButton"
+        android:onClick="outputReset"
         android:text="@string/reset" />
 
 </RelativeLayout>

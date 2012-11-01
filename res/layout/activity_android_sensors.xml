@@ -10,7 +10,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="34dp"
-        android:onClick="start"
+        android:onClick="inputStart"
         android:text="@string/next" />
 
     <Button
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/buttonNext"
-        android:onClick="reset"
+        android:onClick="inputReset"
         android:text="@string/reset" />
 
     <TextView

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 public class AndroidSensors extends Activity {
 	ArrayList<String> options = new ArrayList<String>();
@@ -17,23 +18,59 @@ public class AndroidSensors extends Activity {
         setContentView(R.layout.activity_android_sensors);
     }
     
-    public void start(View view){
+    public void inputStart(View view){
     	int first = R.id.movementCB;
     	CheckBox v;
-    	while((v=(CheckBox)findViewById(first)) != null){   		
+    	while((v=(CheckBox)findViewById(first)) != null){
     		if(v.isChecked())
     			options.add(v.getText()+"");
     		first++;
-    	}    	 
+    	}   
+    	if(options.size()==0)
+    		Toast.makeText(getApplicationContext(), "Select at least one sensor", Toast.LENGTH_SHORT).show();
+    	else
+    		setContentView(R.layout.output_methods);
     }
     
-    public void reset(View view){
+    public void inputReset(View view){
     	int first = R.id.movementCB;
     	CheckBox v;
-    	while((v=(CheckBox)findViewById(first)) != null){   		
-    		v.setChecked(false);
-    		first++;
-    	}
+    	try
+		{
+			while((v=(CheckBox)findViewById(first))!=null)
+			{
+				v.setChecked(false);
+				first++;
+			}
+		}
+		catch(ClassCastException c)
+		{
+			
+		}
+    }
+    
+    public void outputReset(View view)
+	{
+		int first=R.id.xmlCB;
+		CheckBox v;
+		try
+		{
+			while((v=(CheckBox)findViewById(first))!=null)
+			{
+				v.setChecked(false);
+				first++;
+			}
+		
+		}
+		catch(ClassCastException c)
+		{
+			
+		}
+	}
+    
+    public void outputNext(View view)
+    {
+    	
     }
 
     @Override
