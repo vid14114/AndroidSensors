@@ -181,7 +181,7 @@ public class Coordinator implements Runnable{
 	 * Generate a wav file where tts spoken words will be recorded into
 	 * @param inputOptions
 	 */
-	public void generateAudio(ArrayList<String> inputOptions){	
+	public void generateAudio(final ArrayList<String> inputOptions){	
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 			and.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
@@ -194,65 +194,64 @@ public class Coordinator implements Runnable{
 					System.exit(0);
 				}
 				tts.setLanguage(Locale.ENGLISH);
+				String text = ""; //This is the text to be recorded to the wav file
+				//////////////////////////////////////////////////////////////////////////////////////////////////////
+				for(String option : inputOptions){
+					if(option.equals("Movement"))
+						text+="Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
+					"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+					"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+					"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		    		
+					if(option.equals("Accelerometer"))
+						text+="Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ";
+					if(option.equals("Magnet"))
+						text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+						    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+						    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+						    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ";					
+					if(option.equals("Direction"))
+						text+="Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		 				
+					if(option.equals("Air Pressure"))
+						text+="Measuring the air pressure in the room in millibar."+
+						    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ";		 					
+					if(option.equals("Temperature"))
+						text+="Measuring the temperature in Celsius."+
+						    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ";					
+					if(option.equals("Light"))
+						text+="Measuring light in SI lux."+
+						    	"Light is "+SensorListener.light+" SI lux. The End ";				
+					if(option.equals("Microphone") && and.speak(true)){
+						text+="The user recorded something, the following was understood: "; 
+						for(String temp : and.speechResults)
+							text+=temp+" ";
+						text+="The End ";
+					}
+					if(option.equals("Camera")){
+					}
+					if(option.equals("GPS"))
+						text+="Trying to locate the user."+
+						    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+						    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+						    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
+				}	
+		///////////////////////////////////////////// Now writing the recorded data into a file
+				String destFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav";
+				tts.synthesizeToFile(text, null, destFileName);
 			}
-		});
-		String text = ""; //This is the text to be recorded to the wav file
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		for(String option : inputOptions){
-			if(option.equals("Movement"))
-				text+="Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
-			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		    		
-			if(option.equals("Accelerometer"))
-				text+="Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ";
-			if(option.equals("Magnet"))
-				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
-				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
-				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
-				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ";					
-			if(option.equals("Direction"))
-				text+="Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		 				
-			if(option.equals("Air Pressure"))
-				text+="Measuring the air pressure in the room in millibar."+
-				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ";		 					
-			if(option.equals("Temperature"))
-				text+="Measuring the temperature in Celsius."+
-				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ";					
-			if(option.equals("Light"))
-				text+="Measuring light in SI lux."+
-				    	"Light is "+SensorListener.light+" SI lux. The End ";				
-			if(option.equals("Microphone") && and.speak(true)){
-				text+="The user recorded something, the following was understood: "; 
-				for(String temp : and.speechResults)
-					text+=temp+" ";
-				text+="The End ";
-			}
-			if(option.equals("Camera")){
-			}
-			if(option.equals("GPS"))
-				text+="Trying to locate the user."+
-				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
-				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
-				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
-		}	
-///////////////////////////////////////////// Now writing the recorded data into a file
-		String destFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav";
-		tts.synthesizeToFile(text, null, destFileName);
-		tts.shutdown();
+		});		
 	}
 	
 	/**
 	 * Use TTS to tell the user the results immediately
 	 * @param inputOptions
 	 */
-	public void ttsSpeak(ArrayList<String> inputOptions){	
+	public void ttsSpeak(final ArrayList<String> inputOptions){	
 		//Initialize TTS
 		tts = new TextToSpeech(and, new OnInitListener() {			
 			public void onInit(int status) {
@@ -261,61 +260,61 @@ public class Coordinator implements Runnable{
 					System.exit(0);
 				}
 				tts.setLanguage(Locale.ENGLISH);
+				for(String option : inputOptions){
+					if(option.equals("Movement"))
+						tts.speak("Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
+					"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+					"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+					"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		    		
+					if(option.equals("Accelerometer"))
+						tts.speak("Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);
+					if(option.equals("Magnet"))
+						tts.speak("Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+						    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+						    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+						    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ", TextToSpeech.QUEUE_ADD, null);					
+					if(option.equals("Direction"))
+						tts.speak("Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		 				
+					if(option.equals("Air Pressure"))
+						tts.speak("Measuring the air pressure in the room in millibar."+
+						    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ",TextToSpeech.QUEUE_ADD,null);		 					
+					if(option.equals("Temperature"))
+						tts.speak("Measuring the temperature in Celsius."+
+						    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ",TextToSpeech.QUEUE_ADD,null);					
+					if(option.equals("Light"))
+						tts.speak("Measuring light in SI lux."+
+						    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
+					if(option.equals("Microphone") && and.speak(true)){
+						tts.speak("The user recorded something, the following was understood: ", TextToSpeech.QUEUE_ADD, null); 
+						for(String temp : and.speechResults)
+							tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
+						tts.speak("The End ",TextToSpeech.QUEUE_ADD,null);
+					}
+					if(option.equals("Camera")){
+					}
+					if(option.equals("GPS"))
+						tts.speak("Trying to locate the user."+
+						    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+						    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+						    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ",TextToSpeech.QUEUE_ADD,null);	
+				}
 			}
+			
 		});
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		for(String option : inputOptions){
-			if(option.equals("Movement"))
-				tts.speak("Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
-			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		    		
-			if(option.equals("Accelerometer"))
-				tts.speak("Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);
-			if(option.equals("Magnet"))
-				tts.speak("Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
-				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
-				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
-				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ", TextToSpeech.QUEUE_ADD, null);					
-			if(option.equals("Direction"))
-				tts.speak("Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		 				
-			if(option.equals("Air Pressure"))
-				tts.speak("Measuring the air pressure in the room in millibar."+
-				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ",TextToSpeech.QUEUE_ADD,null);		 					
-			if(option.equals("Temperature"))
-				tts.speak("Measuring the temperature in Celsius."+
-				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ",TextToSpeech.QUEUE_ADD,null);					
-			if(option.equals("Light"))
-				tts.speak("Measuring light in SI lux."+
-				    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
-			if(option.equals("Microphone") && and.speak(true)){
-				tts.speak("The user recorded something, the following was understood: ", TextToSpeech.QUEUE_ADD, null); 
-				for(String temp : and.speechResults)
-					tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
-				tts.speak("The End ",TextToSpeech.QUEUE_ADD,null);
-			}
-			if(option.equals("Camera")){
-			}
-			if(option.equals("GPS"))
-				tts.speak("Trying to locate the user."+
-				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
-				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
-				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ",TextToSpeech.QUEUE_ADD,null);	
-		}
-		tts.shutdown();
+		//////////////////////////////////////////////////////////////////////////////////////////////////////		
 	}
 
 	/**
 	 * Generate a call, and use TTS to speak to the participant
 	 * @param inputOptions
 	 */
-	public void generateCall(ArrayList<String> inputOptions){	
+	public void generateCall(final ArrayList<String> inputOptions){	
 		//Initialize TTS
 		tts = new TextToSpeech(and, new OnInitListener() {			
 			public void onInit(int status) {
@@ -324,64 +323,64 @@ public class Coordinator implements Runnable{
 					System.exit(0);
 				}
 				tts.setLanguage(Locale.ENGLISH);
+				String text = ""; //This is the text to be recorded and then spoken when the call has been initiated
+				//////////////////////////////////////////////////////////////////////////////////////////////////////
+				for(String option : inputOptions){
+					if(option.equals("Movement"))
+						text+="Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
+					"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+					"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+					"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		    		
+					if(option.equals("Accelerometer"))
+						text+="Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ";
+					if(option.equals("Magnet"))
+						text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+						    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+						    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+						    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ";					
+					if(option.equals("Direction"))
+						text+="Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
+						    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+						    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+						    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		 				
+					if(option.equals("Air Pressure"))
+						text+="Measuring the air pressure in the room in millibar."+
+						    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ";		 					
+					if(option.equals("Temperature"))
+						text+="Measuring the temperature in Celsius."+
+						    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ";					
+					if(option.equals("Light"))
+						text+="Measuring light in SI lux."+
+						    	"Light is "+SensorListener.light+" SI lux. The End ";				
+					if(option.equals("Microphone") && and.speak(true)){
+						text+="The user recorded something, this following was understood: "; 
+						for(String temp : and.speechResults)
+							text+=temp+" ";
+						text+="The End ";
+					}
+					if(option.equals("Camera")){
+					}
+					if(option.equals("GPS"))
+						text+="Trying to locate the user."+
+						    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+						    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+						    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
+				}	
+		///////////////////////////////////////////// Now initiating call and starting to say the text of the generated file
+				if(and.call()){
+					try {
+						Thread.sleep(5000);
+						tts.speak(text, TextToSpeech.QUEUE_ADD, null);
+					} catch (InterruptedException e) {
+						and.displayMessage("An unknown error occured");
+					}
+				}			
 			}
 		});
-		String text = ""; //This is the text to be recorded and then spoken when the call has been initiated
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		for(String option : inputOptions){
-			if(option.equals("Movement"))
-				text+="Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
-			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		    		
-			if(option.equals("Accelerometer"))
-				text+="Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ";
-			if(option.equals("Magnet"))
-				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
-				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
-				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
-				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ";					
-			if(option.equals("Direction"))
-				text+="Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		 				
-			if(option.equals("Air Pressure"))
-				text+="Measuring the air pressure in the room in millibar."+
-				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ";		 					
-			if(option.equals("Temperature"))
-				text+="Measuring the temperature in Celsius."+
-				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ";					
-			if(option.equals("Light"))
-				text+="Measuring light in SI lux."+
-				    	"Light is "+SensorListener.light+" SI lux. The End ";				
-			if(option.equals("Microphone") && and.speak(true)){
-				text+="The user recorded something, this following was understood: "; 
-				for(String temp : and.speechResults)
-					text+=temp+" ";
-				text+="The End ";
-			}
-			if(option.equals("Camera")){
-			}
-			if(option.equals("GPS"))
-				text+="Trying to locate the user."+
-				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
-				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
-				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
-		}	
-///////////////////////////////////////////// Now initiating call and starting to say the text of the generated file
-		if(and.call()){
-			try {
-				Thread.sleep(5000);
-				tts.speak(text, TextToSpeech.QUEUE_ADD, null);
-			} catch (InterruptedException e) {
-				and.displayMessage("An unknown error occured");
-			}
-		}			
-		tts.shutdown();
+		
 	}
 
 	/**
@@ -393,25 +392,25 @@ public class Coordinator implements Runnable{
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		for(String option : inputOptions){
 			if(option.equals("Movement"))
-				text+="Measuring movement on x,y and z axis in m/s². "+
-			"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
-			"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
-			"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		    		
+				text+="Measuring movement on x,y and z axis in m/s to the power of 2. "+
+			"Axis x is "+SensorListener.movementDirection[0]+" m/s to the power of 2. "+
+			"Axis y is "+SensorListener.movementDirection[1]+" m/s to the power of 2. "+
+			"Axis z is "+SensorListener.movementDirection[2]+" m/s to the power of 2. ";		    		
 			if(option.equals("Accelerometer"))
-				text+="Measuring the accelerometer on x,y and z axis in m/s². "+
-				    	"Axis x is "+SensorListener.accelerometer[0]+" m/s². "+
-				    	"Axis y is "+SensorListener.accelerometer[1]+" m/s². "+
-				    	"Axis z is "+SensorListener.accelerometer[2]+" m/s². ";
+				text+="Measuring the accelerometer on x,y and z axis in m/s to the power of 2. "+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" m/s to the power of 2. "+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" m/s to the power of 2. "+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" m/s to the power of 2. ";
 			if(option.equals("Magnet"))
 				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis. "+
 				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
 				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
 				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. ";
 			if(option.equals("Direction"))
-				text+="Measuring the direction on x,y and z axis in m/s². "+
-				    	"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
-				    	"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
-				    	"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		 				
+				text+="Measuring the direction on x,y and z axis in m/s to the power of 2. "+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" m/s to the power of 2. "+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" m/s to the power of 2. "+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" m/s to the power of 2. ";		 				
 			if(option.equals("Air Pressure"))
 				text+="Measuring the air pressure in the room in millibar. "+
 				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. ";		 					
@@ -598,6 +597,7 @@ public class Coordinator implements Runnable{
 			if(option.equals("Internet"))
 				generateHTML(inputOptions);
 		}
+		and.revoke();
 	}
 	
 }

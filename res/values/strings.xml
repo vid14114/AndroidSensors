@@ -29,7 +29,7 @@
     <string name="file">File</string>
     <string name="internet">Internet</string>
     <string name="dialog_text">Please enter a number</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
 
 </resources>

@@ -1,6 +1,8 @@
 package com.example.androidsensors;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
+
 import com.example.androidsensors.R;
 import android.location.LocationManager;
 import android.media.MediaRecorder;
@@ -32,9 +34,11 @@ import android.widget.Toast;
 public class AndroidSensors extends Activity{
 	ArrayList<String> inputOptions = new ArrayList<String>();
 	ArrayList<String> outputOptions = new ArrayList<String>();
+	Handler h = new Handler();
 	SensorManager sensorManager;
 	SensorListener ps;
 	LocationManager locMan;
+	String message;
 	AndroidLocationListener locListener = new AndroidLocationListener();
 	String phonenumber;
 	public static final int REQUEST_CODE = 3003;
@@ -119,31 +123,13 @@ public class AndroidSensors extends Activity{
     		if(inputOptions.contains("GPS"))
     			startListen();
     		if(outputOptions.contains("Phone Call") || outputOptions.contains("SMS")){ //If the user selects Phone Call or SMS as an output method -> i do the following
-    			/*
-    			 * I call the setPositiveButton, setNegativeButton and create method to do all the necessary
-    			 * things before i continue 
-    			 * A dialog pops up asking the user to input their phone number
-    			 */
-    			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    			LayoutInflater inflater = getLayoutInflater();
-    			builder.setView(inflater.inflate(R.layout.number_dialog, null))
-    				.setPositiveButton(R.id.dialog_ok, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							TextView tv = (TextView)findViewById(R.id.phoneNumber);
-							phonenumber = tv.getText()+"";
-						}
-					})
-					.setNegativeButton(R.id.dialog_cancel, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							phonenumber = null;
-							outputOptions.remove("Phone Call");
-						}
-					})
-					.create();
+	    		setContentView(R.layout.number_dialog);	  
+	    		startSensors();
     		}
-    		startSensors();
-    		Handler h = new Handler();
-    		h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 10000);
+    		else{
+    			startSensors();	    		
+	    		h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    		}    			
     	}
     }
     
@@ -192,7 +178,8 @@ public class AndroidSensors extends Activity{
     }
     
     public void sendSMS(String message){
-    	PendingIntent sent = PendingIntent.getBroadcast(this, 0, new Intent("SENT"), 0);
+    	String infoSent = "SMS_SENT";
+		PendingIntent sent = PendingIntent.getBroadcast(this, 0, new Intent(infoSent), 0);  
     	registerReceiver(new BroadcastReceiver() {			
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -201,9 +188,11 @@ public class AndroidSensors extends Activity{
 				else
 					displayMessage("Error sending SMS");
 			}
-		}, new IntentFilter("SENT"));
+		}, new IntentFilter(infoSent));    	
     	SmsManager sms = SmsManager.getDefault();
-    	sms.sendTextMessage(phonenumber, null, message, sent, null);
+    	if(sms == null)
+    		return;
+		sms.sendTextMessage(phonenumber.toString(), null, message, sent, null);
     }
     /**
      * Is called after the speech has been through the recognizer
@@ -233,8 +222,37 @@ public class AndroidSensors extends Activity{
     }
     
     public void onPause(){
+    	super.onPause();
+    	try{
     	sensorManager.unregisterListener(ps);
     	locMan.removeUpdates(locListener);
+    	}catch(NullPointerException e) {
+    		displayMessage("Couldn't pause the app");
+    	}
+    }
+    
+    /**
+     * The user is prompted for a telephone number, when the user clicks on cancel --> this method is called
+     */
+    public void cancelDialog(View view){
+    	phonenumber = null;
+    	outputOptions.remove("Phone Call");
+		outputOptions.remove("SMS");
+    	setContentView(R.layout.activity_android_sensors);
+    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    }
+    
+    /**
+     * When the user enters a phone number and clicks on ok --> this method is called
+     */
+    public void getPhoneNumber(View view){
+    	phonenumber = ((TextView)findViewById(R.id.phoneNumber)).getText()+"";
+    	if(phonenumber == null){
+    		outputOptions.remove("Phone Call");
+    		outputOptions.remove("SMS");
+    	}
+    	setContentView(R.layout.activity_android_sensors);
+    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
     }
     
     /**
@@ -281,5 +299,13 @@ public class AndroidSensors extends Activity{
 		}catch(NullPointerException e){ //If the sensor isn't available on the phone, sensor is null
 			Toast.makeText(getApplicationContext(), "Sorry, but one of the sensor types you chose is not available on your mobile phone", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	
+	/**
+	 * Coordinator calls this method when it is finished with parsing through the necessary things
+	 */
+	public void revoke() {
+		setContentView(R.layout.activity_android_sensors);
 	}
 }
