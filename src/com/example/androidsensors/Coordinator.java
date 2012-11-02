@@ -2,28 +2,25 @@
  * 
  */
 package com.example.androidsensors;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-
 import org.xmlpull.v1.XmlSerializer;
-
-import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.text.method.MovementMethod;
 import android.util.Xml;
 
 /**
  * @author abideen
  *
  */
-public class Coordinator implements Runnable, OnInitListener{	
+public class Coordinator implements Runnable{	
 	TextToSpeech tts;
 	AndroidSensors and;
 	ArrayList<String> inputOptions;
@@ -33,7 +30,7 @@ public class Coordinator implements Runnable, OnInitListener{
  * Take the output option first, calculate all the input values for it	
  */
 	
-	public Coordinator(ArrayList<String> inputOptions, ArrayList<String> outputOptions, AndroidSensors and, Handler h){
+	public Coordinator(ArrayList<String> inputOptions, ArrayList<String> outputOptions,  AndroidSensors and, Handler h){
 		this.and = and;
 		this.inputOptions = inputOptions;
 		this.outputOptions = outputOptions;
@@ -46,7 +43,7 @@ public class Coordinator implements Runnable, OnInitListener{
 	 */
 	public void generateXML(ArrayList<String> inputOptions){
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-			and.displayError("Could not write to the external storage, an unknown error occured");
+			and.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
 		}
 		//create a new file called "new.xml" in the SD card, Here we start the generating the file	    
@@ -63,7 +60,7 @@ public class Coordinator implements Runnable, OnInitListener{
 	        	serializer.startTag(null, "Results");
 	        }
 	        catch(IOException e){
-	        	and.displayError("Couldn't create xml file");
+	        	and.displayMessage("Couldn't create xml file");
 	        	return;
 	        }
 		// The options the user chose are added from this point on
@@ -174,9 +171,9 @@ public class Coordinator implements Runnable, OnInitListener{
 		    serializer.endDocument();
 		    serializer.flush();
 		    fo.close();
-		    and.displayError("XML file generated: "+Environment.getExternalStorageDirectory()+"/generated.xml");
+		    and.displayMessage("XML file generated: "+Environment.getExternalStorageDirectory()+"/generated.xml");
 	    }catch(IOException e){
-	    	and.displayError("An Unknown error occured");
+	    	and.displayMessage("An Unknown error occured");
 	    }
 	}
 
@@ -186,20 +183,150 @@ public class Coordinator implements Runnable, OnInitListener{
 	 */
 	public void generateAudio(ArrayList<String> inputOptions){	
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-			and.displayError("Could not write to the external storage, an unknown error occured");
+			and.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
 		}
 		//Initialize TTS
 		tts = new TextToSpeech(and, new OnInitListener() {			
 			public void onInit(int status) {
 				if(status == TextToSpeech.ERROR){
-					and.displayError("Text to Speech not working! Exiting");
+					and.displayMessage("Text to Speech not working! Exiting");
 					System.exit(0);
 				}
 				tts.setLanguage(Locale.ENGLISH);
 			}
 		});
 		String text = ""; //This is the text to be recorded to the wav file
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		for(String option : inputOptions){
+			if(option.equals("Movement"))
+				text+="Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
+			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		    		
+			if(option.equals("Accelerometer"))
+				text+="Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ";
+			if(option.equals("Magnet"))
+				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ";					
+			if(option.equals("Direction"))
+				text+="Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ";		 				
+			if(option.equals("Air Pressure"))
+				text+="Measuring the air pressure in the room in millibar."+
+				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ";		 					
+			if(option.equals("Temperature"))
+				text+="Measuring the temperature in Celsius."+
+				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ";					
+			if(option.equals("Light"))
+				text+="Measuring light in SI lux."+
+				    	"Light is "+SensorListener.light+" SI lux. The End ";				
+			if(option.equals("Microphone") && and.speak(true)){
+				text+="The user recorded something, the following was understood: "; 
+				for(String temp : and.speechResults)
+					text+=temp+" ";
+				text+="The End ";
+			}
+			if(option.equals("Camera")){
+			}
+			if(option.equals("GPS"))
+				text+="Trying to locate the user."+
+				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
+		}	
+///////////////////////////////////////////// Now writing the recorded data into a file
+		String destFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav";
+		tts.synthesizeToFile(text, null, destFileName);
+		tts.shutdown();
+	}
+	
+	/**
+	 * Use TTS to tell the user the results immediately
+	 * @param inputOptions
+	 */
+	public void ttsSpeak(ArrayList<String> inputOptions){	
+		//Initialize TTS
+		tts = new TextToSpeech(and, new OnInitListener() {			
+			public void onInit(int status) {
+				if(status == TextToSpeech.ERROR){
+					and.displayMessage("Text to Speech not working! Exiting");
+					System.exit(0);
+				}
+				tts.setLanguage(Locale.ENGLISH);
+			}
+		});
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		for(String option : inputOptions){
+			if(option.equals("Movement"))
+				tts.speak("Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
+			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		    		
+			if(option.equals("Accelerometer"))
+				tts.speak("Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);
+			if(option.equals("Magnet"))
+				tts.speak("Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ", TextToSpeech.QUEUE_ADD, null);					
+			if(option.equals("Direction"))
+				tts.speak("Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		 				
+			if(option.equals("Air Pressure"))
+				tts.speak("Measuring the air pressure in the room in millibar."+
+				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ",TextToSpeech.QUEUE_ADD,null);		 					
+			if(option.equals("Temperature"))
+				tts.speak("Measuring the temperature in Celsius."+
+				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ",TextToSpeech.QUEUE_ADD,null);					
+			if(option.equals("Light"))
+				tts.speak("Measuring light in SI lux."+
+				    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
+			if(option.equals("Microphone") && and.speak(true)){
+				tts.speak("The user recorded something, the following was understood: ", TextToSpeech.QUEUE_ADD, null); 
+				for(String temp : and.speechResults)
+					tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
+				tts.speak("The End ",TextToSpeech.QUEUE_ADD,null);
+			}
+			if(option.equals("Camera")){
+			}
+			if(option.equals("GPS"))
+				tts.speak("Trying to locate the user."+
+				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ",TextToSpeech.QUEUE_ADD,null);	
+		}
+		tts.shutdown();
+	}
+
+	/**
+	 * Generate a call, and use TTS to speak to the participant
+	 * @param inputOptions
+	 */
+	public void generateCall(ArrayList<String> inputOptions){	
+		//Initialize TTS
+		tts = new TextToSpeech(and, new OnInitListener() {			
+			public void onInit(int status) {
+				if(status == TextToSpeech.ERROR){
+					and.displayMessage("Text to Speech not working! Exiting");
+					System.exit(0);
+				}
+				tts.setLanguage(Locale.ENGLISH);
+			}
+		});
+		String text = ""; //This is the text to be recorded and then spoken when the call has been initiated
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		for(String option : inputOptions){
 			if(option.equals("Movement"))
@@ -245,70 +372,206 @@ public class Coordinator implements Runnable, OnInitListener{
 				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
 				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ";	
 		}	
-///////////////////////////////////////////// Now writing the recorded data into a file
-		String destFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav";
-		tts.synthesizeToFile(text, null, destFileName);
+///////////////////////////////////////////// Now initiating call and starting to say the text of the generated file
+		if(and.call()){
+			try {
+				Thread.sleep(5000);
+				tts.speak(text, TextToSpeech.QUEUE_ADD, null);
+			} catch (InterruptedException e) {
+				and.displayMessage("An unknown error occured");
+			}
+		}			
+		tts.shutdown();
 	}
-	
+
 	/**
-	 * Now the text to speech is directly outputed to the user
+	 * Generate a SMS message and send it to the user
 	 * @param inputOptions
 	 */
-	public void ttsSpeak(ArrayList<String> inputOptions){	
-		//Initialize TTS
-		tts = new TextToSpeech(and, new OnInitListener() {			
-			public void onInit(int status) {
-				if(status == TextToSpeech.ERROR){
-					and.displayError("Text to Speech not working! Exiting");
-					System.exit(0);
-				}
-				tts.setLanguage(Locale.ENGLISH);
-			}
-		});
+	public void generateSMS(ArrayList<String> inputOptions){			
+		String text = ""; //This is the text with the result to be sent to the phone number the user specified
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		for(String option : inputOptions){
 			if(option.equals("Movement"))
-				tts.speak("Measuring movement on x,y and z axis in meter per seconds to the power of 2."+
-			"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-			"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-			"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		    		
+				text+="Measuring movement on x,y and z axis in m/s². "+
+			"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
+			"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
+			"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		    		
 			if(option.equals("Accelerometer"))
-				tts.speak("Measuring the accelerometer on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.accelerometer[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.accelerometer[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.accelerometer[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);
+				text+="Measuring the accelerometer on x,y and z axis in m/s². "+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" m/s². "+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" m/s². "+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" m/s². ";
 			if(option.equals("Magnet"))
-				tts.speak("Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis"+
+				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis. "+
 				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
 				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
-				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. The End ", TextToSpeech.QUEUE_ADD, null);					
+				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. ";
 			if(option.equals("Direction"))
-				tts.speak("Measuring the direction on x,y and z axis in meter per seconds to the power of 2."+
-				    	"Axis x is "+SensorListener.movementDirection[0]+" meter per seconds to the power of 2, "+
-				    	"Axis y is "+SensorListener.movementDirection[1]+" meter per seconds to the power of 2, "+
-				    	"Axis z is "+SensorListener.movementDirection[2]+" meter per seconds to the power of 2. The End ",TextToSpeech.QUEUE_ADD,null);		 				
+				text+="Measuring the direction on x,y and z axis in m/s². "+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		 				
 			if(option.equals("Air Pressure"))
-				tts.speak("Measuring the air pressure in the room in millibar."+
-				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. The End ",TextToSpeech.QUEUE_ADD,null);		 					
+				text+="Measuring the air pressure in the room in millibar. "+
+				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. ";		 					
 			if(option.equals("Temperature"))
-				tts.speak("Measuring the temperature in Celsius."+
-				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ",TextToSpeech.QUEUE_ADD,null);					
+				text+="Measuring the temperature in Celsius."+
+				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. ";					
 			if(option.equals("Light"))
-				tts.speak("Measuring light in SI lux."+
-				    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
+				text+="Measuring light in SI lux. "+
+				    	"Light is "+SensorListener.light+" SI lux. ";				
 			if(option.equals("Microphone") && and.speak(true)){
-				tts.speak("The user recorded something, this following was understood: ", TextToSpeech.QUEUE_ADD, null); 
+				text+="The user recorded something, the following was understood: "; 
 				for(String temp : and.speechResults)
-					tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
-				tts.speak("The End ",TextToSpeech.QUEUE_ADD,null);
+					text+=temp+" ";
 			}
 			if(option.equals("Camera")){
 			}
 			if(option.equals("GPS"))
-				tts.speak("Trying to locate the user."+
+				text+="Trying to locate the user."+
 				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
 				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
-				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". The End ",TextToSpeech.QUEUE_ADD,null);	
+				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". ";	
+		}	
+///////////////////////////////////////////// Now sendinf the generated text as a SMS to a phonennumber
+		and.sendSMS(text);			
+	}
+
+	/**
+	 * Generate a file txt file with the results and save it on the external storage
+	 * @param inputOptions
+	 */
+	public void generateFile(ArrayList<String> inputOptions){			
+		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			and.displayMessage("Could not write to the external storage, an unknown error occured");
+			return;
+		}
+		String text = ""; //This is the text which will be written onto the file generated		
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		for(String option : inputOptions){
+			if(option.equals("Movement"))
+				text+="Measuring movement on x,y and z axis in m/s². "+
+			"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
+			"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
+			"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		    		
+			if(option.equals("Accelerometer"))
+				text+="Measuring the accelerometer on x,y and z axis in m/s². "+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" m/s². "+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" m/s². "+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" m/s². ";
+			if(option.equals("Magnet"))
+				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis. "+
+				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, "+
+				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, "+
+				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. ";
+			if(option.equals("Direction"))
+				text+="Measuring the direction on x,y and z axis in m/s². "+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" m/s². "+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" m/s². "+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" m/s². ";		 				
+			if(option.equals("Air Pressure"))
+				text+="Measuring the air pressure in the room in millibar. "+
+				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. ";		 					
+			if(option.equals("Temperature"))
+				text+="Measuring the temperature in Celsius."+
+				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. ";					
+			if(option.equals("Light"))
+				text+="Measuring light in SI lux. "+
+				    	"Light is "+SensorListener.light+" SI lux. ";				
+			if(option.equals("Microphone") && and.speak(true)){
+				text+="The user recorded something, the following was understood: "; 
+				for(String temp : and.speechResults)
+					text+=temp+" ";
+			}
+			if(option.equals("Camera")){
+			}
+			if(option.equals("GPS"))
+				text+="Trying to locate the user."+
+				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", "+
+				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", "+
+				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". ";	
+		}	
+///////////////////////////////////////////// Now saving the file onto the external storage
+		File f = new File(Environment.getExternalStorageDirectory()+"/generated.txt");
+		try {
+			f.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			bw.write(text);
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			and.displayMessage("Couldn't generate file");
+		}
+	}
+	
+	/**
+	 * Generate a html file with all the results and save in on the external storage
+	 * @param inputOptions
+	 */
+	public void generateHTML(ArrayList<String> inputOptions){
+		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			and.displayMessage("Could not write to the external storage, an unknown error occured");
+			return;
+		}
+		String text = "<!DOCTYPE html> <html> <head> <title>Results of the chocsen input methods</title> </head> <body> <h1> Results <h1>";
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		for(String option : inputOptions){
+			if(option.equals("Movement"))
+				text+=" <h3> Measuring movement on x,y and z axis in m/s². </h3>"+
+			"<p><ul><li> Axis x is "+SensorListener.movementDirection[0]+" m/s². </li>"+
+			"<li>Axis y is "+SensorListener.movementDirection[1]+" m/s². </li>"+
+			"<li>Axis z is "+SensorListener.movementDirection[2]+" m/s². </li></ul></p>";		    		
+			if(option.equals("Accelerometer"))
+				text+="<h3>Measuring the accelerometer on x,y and z axis in m/s². </h3>"+
+				    	"<p><ul><li> Axis x is "+SensorListener.accelerometer[0]+" m/s². </li>"+
+				    	"<li>Axis y is "+SensorListener.accelerometer[1]+" m/s². </li>"+
+				    	"<li>Axis z is "+SensorListener.accelerometer[2]+" m/s². </li></ul></p>";
+			if(option.equals("Magnet"))
+				text+="<h3>Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis. </h3>"+
+				    	"<p><ul><li>X value is "+SensorListener.magnet[0]+" micro Tesla, </li>"+
+				    	"<li>Y value is "+SensorListener.magnet[1]+" micro Tesla, </li>"+
+				    	"<li>Z value is "+SensorListener.magnet[2]+" micro Tesla. </li></ul><p>";
+			if(option.equals("Direction"))
+				text+="<h3>Measuring the direction on x,y and z axis in m/s². </h3>"+
+				    	"<p><ul><li>Axis x is "+SensorListener.movementDirection[0]+" m/s². </li>"+
+				    	"<li>Axis y is "+SensorListener.movementDirection[1]+" m/s². </li>"+
+				    	"<li>Axis z is "+SensorListener.movementDirection[2]+" m/s². </li></ul></p>";		 				
+			if(option.equals("Air Pressure"))
+				text+="<h3>Measuring the air pressure in the room in millibar. </h3>"+
+				    	"<p>The air pressure in the room is "+SensorListener.pressure+" millibar. </p>";		 					
+			if(option.equals("Temperature"))
+				text+="<h3>Measuring the temperature in Celsius.</h3>"+
+				    	"<p>The temperature is "+SensorListener.temperature+" degrees Celsius. </p>";					
+			if(option.equals("Light"))
+				text+="<h3> Measuring light in SI lux. </h3>"+
+				    	"<p>Light is "+SensorListener.light+" SI lux. </p>";				
+			if(option.equals("Microphone") && and.speak(true)){
+				text+="<h3> Speech Recognition Results </h3>";
+				text+="<p> The user recorded something, the following was understood: <ul>"; 
+				for(String temp : and.speechResults)
+					text+="<li>"+temp+"</li>";
+				text+="</ul></p>";
+			}
+			if(option.equals("Camera")){
+			}
+			if(option.equals("GPS"))
+				text+="<h3>GPS results</h3>";
+				text+="<p>Trying to locate the user.<ul>"+
+				    	"<li>The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+".</li>"+
+				    	"<li>The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+".</li>"+
+				    	"<li>The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+".</li></ul></p>";	
+		}	
+///////////////////////////////////////////// Now saving the file onto the external storage
+		try {
+			File f = new File(Environment.getExternalStorageDirectory()+"/generated.html");
+			f.createNewFile();
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			bw.write(text);
+			bw.flush();
+			bw.close();
+		}catch(IOException e){
+			and.displayMessage("An error occured while generating HTML File");
 		}
 	}
 	
@@ -327,18 +590,14 @@ public class Coordinator implements Runnable, OnInitListener{
 			if(option.equals("Email"))
 				;
 			if(option.equals("Phone Call"))
-				;
+				generateCall(inputOptions);
 			if(option.equals("SMS"))
-				;
+				generateSMS(inputOptions);
 			if(option.equals("File"))
-				;
+				generateFile(inputOptions);
 			if(option.equals("Internet"))
-				;
+				generateHTML(inputOptions);
 		}
-	}
-
-	public void onInit(int status) {
-		
 	}
 	
 }

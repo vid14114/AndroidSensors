@@ -28,5 +28,8 @@
     <string name="sms">SMS</string>
     <string name="file">File</string>
     <string name="internet">Internet</string>
+    <string name="dialog_text">Please enter a number</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
 </resources>
