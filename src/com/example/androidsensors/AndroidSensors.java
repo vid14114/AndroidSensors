@@ -1,8 +1,6 @@
 package com.example.androidsensors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
-
 import com.example.androidsensors.R;
 import android.location.LocationManager;
 import android.media.MediaRecorder;
@@ -10,21 +8,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.speech.RecognizerIntent;
-import android.telephony.SmsManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
@@ -127,8 +118,9 @@ public class AndroidSensors extends Activity{
 	    		startSensors();
     		}
     		else{
-    			startSensors();	    		
-	    		h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    			startSensors();	
+	    		setContentView(R.layout.wait_screen);
+    			h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
     		}    			
     	}
     }
@@ -215,7 +207,8 @@ public class AndroidSensors extends Activity{
         return true;
     }
     
-    public void onPause(){
+    @Override
+	public void onPause(){
     	super.onPause();
     	try{
     	sensorManager.unregisterListener(ps);
@@ -232,16 +225,8 @@ public class AndroidSensors extends Activity{
     	phonenumber = null;
     	outputOptions.remove("Phone Call");
 		outputOptions.remove("SMS");
-    	setContentView(R.layout.activity_android_sensors);
+    	setContentView(R.layout.wait_screen);
     	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
-    }
-    
-    /**
-     * The user can shut TTS down whenever he wants to
-     * @param view
-     */
-    public void cancelTTS(View view){
-    	
     }
     
     /**
@@ -253,7 +238,7 @@ public class AndroidSensors extends Activity{
     		outputOptions.remove("Phone Call");
     		outputOptions.remove("SMS");
     	}
-    	setContentView(R.layout.activity_android_sensors);
+    	setContentView(R.layout.wait_screen);
     	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
     }
     
