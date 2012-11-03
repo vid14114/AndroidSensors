@@ -143,7 +143,7 @@ public class Coordinator implements Runnable{
 		    		serializer.endTag(null, "Light");
 				}
 				if(option.equals("Microphone") && androidSensor.speak(true)){
-					while(androidSensor.speechResults.isEmpty());
+					while(androidSensor.speechResults.isEmpty()) waitForResult();
 					serializer.startTag(null, "Microphone");
 					for(String text:androidSensor.speechResults){
 						serializer.startTag(null, "RecognisedText");
@@ -227,6 +227,7 @@ public class Coordinator implements Runnable{
 						text+="Measuring light in SI lux."+
 						    	"Light is "+SensorListener.light+" SI lux. The End ";				
 					if(option.equals("Microphone") && androidSensor.speak(true)){
+						while(androidSensor.speechResults.isEmpty()) waitForResult();
 						text+="The user recorded something, the following was understood: "; 
 						for(String temp : androidSensor.speechResults)
 							text+=temp+" ";
@@ -291,6 +292,7 @@ public class Coordinator implements Runnable{
 						tts.speak("Measuring light in SI lux."+
 						    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
 					if(option.equals("Microphone") && androidSensor.speak(true)){
+						while(androidSensor.speechResults.isEmpty()) waitForResult();
 						tts.speak("The user recorded something, the following was understood: ", TextToSpeech.QUEUE_ADD, null); 
 						for(String temp : androidSensor.speechResults)
 							tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
@@ -356,6 +358,7 @@ public class Coordinator implements Runnable{
 						text+="Measuring light in SI lux."+
 						    	"Light is "+SensorListener.light+" SI lux. The End ";				
 					if(option.equals("Microphone") && androidSensor.speak(true)){
+						while(androidSensor.speechResults.isEmpty()) waitForResult();
 						text+="The user recorded something, this following was understood: "; 
 						for(String temp : androidSensor.speechResults)
 							text+=temp+" ";
@@ -421,6 +424,7 @@ public class Coordinator implements Runnable{
 				text+="Measuring light in SI lux. "+
 				    	"Light is "+SensorListener.light+" SI lux. ";				
 			if(option.equals("Microphone") && androidSensor.speak(true)){
+				while(androidSensor.speechResults.isEmpty()) waitForResult();
 				text+="The user recorded something, the following was understood: "; 
 				for(String temp : androidSensor.speechResults)
 					text+=temp+" ";
@@ -479,6 +483,7 @@ public class Coordinator implements Runnable{
 				text+="Measuring light in SI lux. "+
 				    	"Light is "+SensorListener.light+" SI lux. ";				
 			if(option.equals("Microphone") && androidSensor.speak(true)){
+				while(androidSensor.speechResults.isEmpty()) waitForResult();
 				text+="The user recorded something, the following was understood: "; 
 				for(String temp : androidSensor.speechResults)
 					text+=temp+" ";
@@ -546,6 +551,7 @@ public class Coordinator implements Runnable{
 				text+="<h3> Measuring light in SI lux. </h3>"+
 				    	"<p>Light is "+SensorListener.light+" SI lux. </p>";				
 			if(option.equals("Microphone") && androidSensor.speak(true)){
+				while(androidSensor.speechResults.isEmpty()) waitForResult();
 				text+="<h3> Speech Recognition Results </h3>";
 				text+="<p> The user recorded something, the following was understood: <ul>"; 
 				for(String temp : androidSensor.speechResults)
@@ -607,6 +613,17 @@ public class Coordinator implements Runnable{
 		if(sms)
 			generateSMS(inputOptions);
 		androidSensor.revoke();
+	}
+	
+	/**
+	 * When the user speaks and Speech Recognizer is enabled
+	 * The result of the Speech Recognizer needs long to come	
+	 */
+	public void waitForResult(){
+		try {
+			wait(2000);
+		} catch (InterruptedException e) {
+		}
 	}
 	
 }
