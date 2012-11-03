@@ -32,9 +32,10 @@ public class AndroidSensors extends Activity{
 	LocationManager locMan;
 	String message;
 	AndroidLocationListener locListener = new AndroidLocationListener();
-	String phonenumber;
-	public static final int REQUEST_CODE = 3003;
-	protected volatile ArrayList<String> speechResults = new ArrayList<String>();
+	String phonenumber; //The phone number the user wants to send the results to
+	private final int REQUEST_CODE = 3003; //Request code used for the speech result request
+	protected volatile ArrayList<String> speechResults = new ArrayList<String>(); //An array of the results of the things the user said
+	private long DELAY_TIME = 5000; //Delay time for the handler to call the coordinator
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,8 +113,12 @@ public class AndroidSensors extends Activity{
     	if(outputOptions.size()==0)
     		displayMessage("Select at least one output method");
     	else{
-    		if(outputOptions.contains("Microphone"))
+    		if(inputOptions.contains("Microphone")){
     			speak(true); //Because of timing issues, the user is already asked here to say words which are going to go through Speech Recognizer
+    			DELAY_TIME = 15000;
+    		}
+    		else
+    			DELAY_TIME = 5000;
     		if(inputOptions.contains("GPS"))
     			startListen();
     		if(outputOptions.contains("Phone Call") || outputOptions.contains("SMS")){ //If the user selects Phone Call or SMS as an output method -> i do the following
@@ -123,7 +128,7 @@ public class AndroidSensors extends Activity{
     		else{
     			startSensors();	
 	    		setContentView(R.layout.wait_screen);
-    			h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    			h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), DELAY_TIME);
     		}    			
     	}
     }
@@ -136,7 +141,8 @@ public class AndroidSensors extends Activity{
     	locMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locListener);
     	locMan.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locListener);
 	}
-	/**
+	
+    /**
      * Prompts the user to speak
      * Until now all speak requests make a call to Speech Recognizer
      * @param withRecognizer A boolean indicating whether to enable speech recognizer or not {now only with speech recognizer}     
@@ -230,7 +236,7 @@ public class AndroidSensors extends Activity{
     	outputOptions.remove("Phone Call");
 		outputOptions.remove("SMS");
     	setContentView(R.layout.wait_screen);
-    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), DELAY_TIME);
     }
     
     /**
@@ -243,7 +249,7 @@ public class AndroidSensors extends Activity{
     		outputOptions.remove("SMS");
     	}
     	setContentView(R.layout.wait_screen);
-    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), DELAY_TIME);
     }
     
     /**

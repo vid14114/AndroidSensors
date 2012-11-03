@@ -238,7 +238,10 @@ public class Coordinator implements Runnable{
 				}	
 		///////////////////////////////////////////// Now writing the recorded data into a file
 				String destFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav";
-				tts.synthesizeToFile(text, null, destFileName);
+				if(TextToSpeech.SUCCESS == tts.synthesizeToFile(text, null, destFileName))
+					androidSensor.displayMessage("Audio file successfully generated: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/generated.wav");
+				else
+					androidSensor.displayMessage("An error occured while generating audio file");
 			}
 		});		
 	}
