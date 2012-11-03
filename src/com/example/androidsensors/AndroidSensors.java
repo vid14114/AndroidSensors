@@ -7,6 +7,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager.OnActivityResultListener;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -135,7 +136,8 @@ public class AndroidSensors extends Activity{
 	}
 	/**
      * Prompts the user to speak
-     * @param withRecognizer A boolean indicating whether to enable speech recognizer or not
+     * Until now all speak requests make a call to Speech Recognizer
+     * @param withRecognizer A boolean indicating whether to enable speech recognizer or not {now only with speech recognizer}     
      */
     public boolean speak(boolean withRecognizer){
     	if(withRecognizer){
