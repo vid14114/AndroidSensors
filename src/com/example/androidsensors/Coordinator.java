@@ -3,7 +3,6 @@
  */
 package com.example.androidsensors;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -47,22 +46,20 @@ public class Coordinator implements Runnable{
 			return;
 		}
 		//create a new file called "new.xml" in the SD card, Here we start the generating the file	    
-			XmlSerializer serializer = null;
-			FileOutputStream fo = null;
-			File generate = new File(Environment.getExternalStorageDirectory()+"/generated.xml");
-	        try{
-	        	generate.createNewFile();
-	        	fo = new FileOutputStream(generate); //We need to bind the new file to a FileOutputStream
-	        	serializer = Xml.newSerializer(); // We create a XMLSerializer in order to write xml to the file
-	        	serializer.setOutput(fo, "UTF-8"); //Outputstream as output for the serializer, UTF-8 as encoding
-	        	serializer.startDocument(null, true);
-	        	serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-	        	serializer.startTag(null, "Results");
-	        }
-	        catch(IOException e){
-	        	androidSensor.displayMessage("Couldn't create xml file");
-	        	return;
-	        }
+		XmlSerializer serializer = null;
+		FileOutputStream fo = null;
+        try{ 		
+        	fo = new FileOutputStream(Environment.getExternalStorageDirectory()+"/generated.xml"); //We need to bind the new file to a FileOutputStream
+        	serializer = Xml.newSerializer(); // We create a XMLSerializer in order to write xml to the file
+        	serializer.setOutput(fo, "UTF-8"); //Outputstream as output for the serializer, UTF-8 as encoding
+        	serializer.startDocument(null, true);
+        	serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+        	serializer.startTag(null, "Results");
+        }
+        catch(IOException e){
+        	androidSensor.displayMessage("Couldn't create xml file");
+        	return;
+        }
 		// The options the user chose are added from this point on
 	    try{
 	    	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,8 +139,7 @@ public class Coordinator implements Runnable{
 		    		serializer.text(SensorListener.light+"");
 		    		serializer.endTag(null, "Light");
 				}
-				if(option.equals("Microphone") && androidSensor.speak(true)){
-					while(androidSensor.speechResults.isEmpty()) waitForResult();
+				if(option.equals("Microphone") && androidSensor.speechEnabled){
 					serializer.startTag(null, "Microphone");
 					for(String text:androidSensor.speechResults){
 						serializer.startTag(null, "RecognisedText");
@@ -226,8 +222,7 @@ public class Coordinator implements Runnable{
 					if(option.equals("Light"))
 						text+="Measuring light in SI lux."+
 						    	"Light is "+SensorListener.light+" SI lux. The End ";				
-					if(option.equals("Microphone") && androidSensor.speak(true)){
-						while(androidSensor.speechResults.isEmpty()) waitForResult();
+					if(option.equals("Microphone") && androidSensor.speechEnabled){
 						text+="The user recorded something, the following was understood: "; 
 						for(String temp : androidSensor.speechResults)
 							text+=temp+" ";
@@ -290,10 +285,9 @@ public class Coordinator implements Runnable{
 						    	"The temperature is "+SensorListener.temperature+" degrees Celsius. The End ",TextToSpeech.QUEUE_ADD,null);					
 					if(option.equals("Light"))
 						tts.speak("Measuring light in SI lux."+
-						    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);				
-					if(option.equals("Microphone") && androidSensor.speak(true)){
-						while(androidSensor.speechResults.isEmpty()) waitForResult();
-						tts.speak("The user recorded something, the following was understood: ", TextToSpeech.QUEUE_ADD, null); 
+						    	"Light is "+SensorListener.light+" SI lux. The End ",TextToSpeech.QUEUE_ADD,null);
+					if(option.equals("Microphone") && androidSensor.speechEnabled){
+						tts.speak("The user recorded something, the following words were understood: ", TextToSpeech.QUEUE_ADD, null); 
 						for(String temp : androidSensor.speechResults)
 							tts.speak(temp+" ", TextToSpeech.QUEUE_ADD, null);
 						tts.speak("The End ",TextToSpeech.QUEUE_ADD,null);
@@ -357,8 +351,7 @@ public class Coordinator implements Runnable{
 					if(option.equals("Light"))
 						text+="Measuring light in SI lux."+
 						    	"Light is "+SensorListener.light+" SI lux. The End ";				
-					if(option.equals("Microphone") && androidSensor.speak(true)){
-						while(androidSensor.speechResults.isEmpty()) waitForResult();
+					if(option.equals("Microphone") && androidSensor.speechEnabled){
 						text+="The user recorded something, this following was understood: "; 
 						for(String temp : androidSensor.speechResults)
 							text+=temp+" ";
@@ -423,8 +416,7 @@ public class Coordinator implements Runnable{
 			if(option.equals("Light"))
 				text+="Measuring light in SI lux. "+
 				    	"Light is "+SensorListener.light+" SI lux. ";				
-			if(option.equals("Microphone") && androidSensor.speak(true)){
-				while(androidSensor.speechResults.isEmpty()) waitForResult();
+			if(option.equals("Microphone") && androidSensor.speechEnabled){
 				text+="The user recorded something, the following was understood: "; 
 				for(String temp : androidSensor.speechResults)
 					text+=temp+" ";
@@ -482,8 +474,7 @@ public class Coordinator implements Runnable{
 			if(option.equals("Light"))
 				text+="Measuring light in SI lux. "+
 				    	"Light is "+SensorListener.light+" SI lux. ";				
-			if(option.equals("Microphone") && androidSensor.speak(true)){
-				while(androidSensor.speechResults.isEmpty()) waitForResult();
+			if(option.equals("Microphone") && androidSensor.speechEnabled){
 				text+="The user recorded something, the following was understood: "; 
 				for(String temp : androidSensor.speechResults)
 					text+=temp+" ";
@@ -497,13 +488,12 @@ public class Coordinator implements Runnable{
 				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". ";	
 		}	
 ///////////////////////////////////////////// Now saving the file onto the external storage
-		File f = new File(Environment.getExternalStorageDirectory()+"/generated.txt");
 		try {
-			f.createNewFile();
-			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Environment.getExternalStorageDirectory()+"/generated.txt")));
 			bw.write(text);
 			bw.flush();
 			bw.close();
+			androidSensor.displayMessage("Generating file was successful, location"+Environment.getExternalStorageDirectory()+"/generated.txt");
 		} catch (IOException e) {
 			androidSensor.displayMessage("Couldn't generate file");
 		}
@@ -550,8 +540,7 @@ public class Coordinator implements Runnable{
 			if(option.equals("Light"))
 				text+="<h3> Measuring light in SI lux. </h3>"+
 				    	"<p>Light is "+SensorListener.light+" SI lux. </p>";				
-			if(option.equals("Microphone") && androidSensor.speak(true)){
-				while(androidSensor.speechResults.isEmpty()) waitForResult();
+			if(option.equals("Microphone") && androidSensor.speechEnabled){
 				text+="<h3> Speech Recognition Results </h3>";
 				text+="<p> The user recorded something, the following was understood: <ul>"; 
 				for(String temp : androidSensor.speechResults)
@@ -570,18 +559,11 @@ public class Coordinator implements Runnable{
 		}	
 ///////////////////////////////////////////// Now saving the file onto the external storage
 		try {
-			File f = new File(Environment.getExternalStorageDirectory()+"/generated.html");
-			if(f.exists()){
-				f.delete();
-				f.createNewFile();
-			}
-			else
-				f.createNewFile();
-			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Environment.getExternalStorageDirectory()+"/generated.html")));
 			bw.write(text);
 			bw.flush();
 			bw.close();
-			androidSensor.displayMessage("Generating HTML document successfully, location"+f.getAbsolutePath());
+			androidSensor.displayMessage("Generating HTML document successfully, location"+Environment.getExternalStorageDirectory()+"/generated.html");
 		}catch(IOException e){
 			androidSensor.displayMessage("An error occured while generating HTML File");
 		}
@@ -614,16 +596,4 @@ public class Coordinator implements Runnable{
 			generateSMS(inputOptions);
 		androidSensor.revoke();
 	}
-	
-	/**
-	 * When the user speaks and Speech Recognizer is enabled
-	 * The result of the Speech Recognizer needs long to come	
-	 */
-	public void waitForResult(){
-		try {
-			wait(2000);
-		} catch (InterruptedException e) {
-		}
-	}
-	
 }

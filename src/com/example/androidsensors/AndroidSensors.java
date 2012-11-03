@@ -7,7 +7,6 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager.OnActivityResultListener;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -27,6 +26,7 @@ public class AndroidSensors extends Activity{
 	ArrayList<String> inputOptions = new ArrayList<String>();
 	ArrayList<String> outputOptions = new ArrayList<String>();
 	Handler h = new Handler();
+	protected boolean speechEnabled; // A variable which saves the state of Speech Recognizer
 	SensorManager sensorManager;
 	SensorListener ps;
 	LocationManager locMan;
@@ -34,7 +34,7 @@ public class AndroidSensors extends Activity{
 	AndroidLocationListener locListener = new AndroidLocationListener();
 	String phonenumber;
 	public static final int REQUEST_CODE = 3003;
-	protected ArrayList<String> speechResults = new ArrayList<String>();
+	protected volatile ArrayList<String> speechResults = new ArrayList<String>();
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +112,8 @@ public class AndroidSensors extends Activity{
     	if(outputOptions.size()==0)
     		displayMessage("Select at least one output method");
     	else{
+    		if(outputOptions.contains("Microphone"))
+    			speak(true); //Because of timing issues, the user is already asked here to say words which are going to go through Speech Recognizer
     		if(inputOptions.contains("GPS"))
     			startListen();
     		if(outputOptions.contains("Phone Call") || outputOptions.contains("SMS")){ //If the user selects Phone Call or SMS as an output method -> i do the following
