@@ -578,15 +578,15 @@ public class Coordinator implements Runnable{
 		for(String option: outputOptions){
 			if(option.equals("XML"))
 				generateXML(inputOptions);
-			if(option.equals("View"))
+			if(option.equals("View")) //Vidovic will do this
 				;
-			if(option.equals("Dialog"))
+			if(option.equals("Dialog")) //Vidovic will do this (i don't no how)
 				;
 			if(option.equals("Audiofile"))
 				generateAudio(inputOptions);
 			if(option.equals("TTS"))
 				ttsSpeak(inputOptions);
-			if(option.equals("Email"))
+			if(option.equals("Email")) //Vidovic will do this
 				;
 			if(option.equals("Phone Call"))
 				generateCall(inputOptions);

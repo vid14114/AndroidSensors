@@ -177,23 +177,17 @@ public class AndroidSensors extends Activity{
     	}catch(ActivityNotFoundException e){displayMessage("Couldn't place call"); return false;}
     }
     
+    /**
+     * Sends a SMS to a number which the user has already givem
+     * @param message The message to be sent
+     */
     public void sendSMS(String message){
-    	String infoSent = "SMS_SENT";
-		PendingIntent sent = PendingIntent.getBroadcast(this, 0, new Intent(infoSent), 0);  
-    	registerReceiver(new BroadcastReceiver() {			
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				if(getResultCode() == Activity.RESULT_OK)
-					displayMessage("SMS successfully sent");
-				else
-					displayMessage("Error sending SMS");
-			}
-		}, new IntentFilter(infoSent));    	
-    	SmsManager sms = SmsManager.getDefault();
-    	if(sms == null)
-    		return;
-		sms.sendTextMessage(phonenumber.toString(), null, message, sent, null);
+    	Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+    	sendIntent.setData(Uri.parse("sms:"+phonenumber));
+    	sendIntent.putExtra("sms_body", message);		    	    	    
+		startActivity(sendIntent);
     }
+   
     /**
      * Is called after the speech has been through the recognizer
      */
@@ -240,6 +234,14 @@ public class AndroidSensors extends Activity{
 		outputOptions.remove("SMS");
     	setContentView(R.layout.activity_android_sensors);
     	h.postDelayed(new Coordinator(inputOptions, outputOptions, this, h), 5000);
+    }
+    
+    /**
+     * The user can shut TTS down whenever he wants to
+     * @param view
+     */
+    public void cancelTTS(View view){
+    	
     }
     
     /**
