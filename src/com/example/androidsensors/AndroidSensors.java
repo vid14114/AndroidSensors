@@ -114,12 +114,16 @@ public class AndroidSensors extends Activity{
     		displayMessage("Select at least one output method");
     	else{
     		if(inputOptions.contains("Microphone")){
-    			speak(true); //Because of timing issues, the user is already asked here to say words which are going to go through Speech Recognizer
+    			/*
+    			 * Because of timing issues, the user is already asked here to say words which are going to go through Speech Recognizer
+    			 * When Speech Recognizer is available, the speechEnabled variable will be set to true
+    			 */
+    			speechEnabled = speak(true);
     			DELAY_TIME = 15000;
     		}
     		else
     			DELAY_TIME = 5000;
-    		if(inputOptions.contains("GPS"))
+    		if(inputOptions.contains("GPS")) //Start the GPS service
     			startListen();
     		if(outputOptions.contains("Phone Call") || outputOptions.contains("SMS")){ //If the user selects Phone Call or SMS as an output method -> i do the following
 	    		setContentView(R.layout.number_dialog);	  
@@ -253,7 +257,7 @@ public class AndroidSensors extends Activity{
     }
     
     /**
-     * Registers all the sensors the user needs
+     * Registers all the measurable sensors the user needs using sensorManager
      */
 	public void startSensors(){
 		Sensor sensor;
@@ -301,6 +305,7 @@ public class AndroidSensors extends Activity{
 	
 	/**
 	 * Coordinator calls this method when it is finished with parsing through the necessary things
+	 * The method sets the default layout back to the main screen, so the user can start the whole process again
 	 */
 	public void revoke() {
 		setContentView(R.layout.activity_android_sensors);
