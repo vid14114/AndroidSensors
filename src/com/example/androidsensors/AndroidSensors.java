@@ -219,7 +219,7 @@ public class AndroidSensors extends Activity{
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_android_sensors, menu);
         return true;
-    }
+    }   
     
     @Override
 	public void onPause(){

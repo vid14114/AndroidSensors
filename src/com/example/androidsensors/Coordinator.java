@@ -40,7 +40,7 @@ public class Coordinator implements Runnable{
 	 * Option is XML
 	 * @param inputOptions the input types the user selected
 	 */
-	public void generateXML(ArrayList<String> inputOptions){
+	public void generateXML(){
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 			androidSensor.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
@@ -177,7 +177,7 @@ public class Coordinator implements Runnable{
 	 * Generate a wav file where tts spoken words will be recorded into
 	 * @param inputOptions
 	 */
-	public void generateAudio(final ArrayList<String> inputOptions){	
+	public void generateAudio(){	
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 			androidSensor.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
@@ -250,7 +250,7 @@ public class Coordinator implements Runnable{
 	 * Use TTS to tell the user the results immediately
 	 * @param inputOptions
 	 */
-	public void ttsSpeak(final ArrayList<String> inputOptions){	
+	public void ttsSpeak(){	
 		//Initialize TTS
 		tts = new TextToSpeech(androidSensor, new OnInitListener() {			
 			public void onInit(int status) {
@@ -313,7 +313,7 @@ public class Coordinator implements Runnable{
 	 * Generate a call, and use TTS to speak to the participant
 	 * @param inputOptions
 	 */
-	public void generateCall(final ArrayList<String> inputOptions){	
+	public void generateCall(){	
 		//Initialize TTS
 		tts = new TextToSpeech(androidSensor, new OnInitListener() {			
 			public void onInit(int status) {
@@ -386,7 +386,7 @@ public class Coordinator implements Runnable{
 	 * Generate a SMS message and send it to the user
 	 * @param inputOptions
 	 */
-	public void generateSMS(ArrayList<String> inputOptions){			
+	public void generateSMS(){			
 		String text = ""; //This is the text with the result to be sent to the phone number the user specified
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		for(String option : inputOptions){
@@ -440,7 +440,7 @@ public class Coordinator implements Runnable{
 	 * Generate a file txt file with the results and save it on the external storage
 	 * @param inputOptions
 	 */
-	public void generateFile(ArrayList<String> inputOptions){			
+	public void generateFile(){			
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 			androidSensor.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
@@ -506,7 +506,7 @@ public class Coordinator implements Runnable{
 	 * Generate a html file with all the results and save in on the external storage
 	 * @param inputOptions
 	 */
-	public void generateHTML(ArrayList<String> inputOptions){
+	public void generateHTML(){
 		if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 			androidSensor.displayMessage("Could not write to the external storage, an unknown error occured");
 			return;
@@ -575,28 +575,28 @@ public class Coordinator implements Runnable{
 	public void run() {
 		for(String option: outputOptions){
 			if(option.equals("XML"))
-				generateXML(inputOptions);
+				generateXML();
 			if(option.equals("View")) //Vidovic will do this 
 				;
 			if(option.equals("Dialog")) //Vidovic will do this
 				;
 			if(option.equals("Audiofile"))
-				generateAudio(inputOptions);
+				generateAudio();
 			if(option.equals("TTS"))
-				ttsSpeak(inputOptions);
+				ttsSpeak();
 			if(option.equals("Email")) //Vidovic will do this
 				;
 			if(option.equals("Phone Call"))
-				generateCall(inputOptions);
+				generateCall();
 			if(option.equals("SMS")) //When we invoke the intent which sends a SMS, the whole program pauses that is why we choose the SMS as the last option 
 				sms = true;
 			if(option.equals("File"))
-				generateFile(inputOptions);
+				generateFile();
 			if(option.equals("Internet"))
-				generateHTML(inputOptions);
+				generateHTML();
 		}
 		if(sms)
-			generateSMS(inputOptions);
+			generateSMS();
 		androidSensor.revoke();
 	}
 }
