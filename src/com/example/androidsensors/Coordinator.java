@@ -8,12 +8,17 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.xmlpull.v1.XmlSerializer;
 import android.os.Environment;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Xml;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * @author abideen
@@ -26,6 +31,7 @@ public class Coordinator implements Runnable{
 	ArrayList<String> outputOptions; //The output options selected by the user
 	Handler h;
 	boolean sms;
+	boolean view;
 /*
  * Take the output option first, calculate all the input values for it	
  */	
@@ -572,12 +578,71 @@ public class Coordinator implements Runnable{
 		}
 	}
 	
+	public void generateView()
+	{
+		androidSensor.runOnUiThread(new Runnable() {
+			public void run() {
+		LinearLayout ll=new LinearLayout(androidSensor);
+		String text="";
+		TextView tv=new TextView(androidSensor);
+		ll.addView(tv);
+		for(String option : inputOptions)
+		{
+			if(option.equals("Movement"))
+			{
+				text+="Measuring movement on x,y and z axis in m/s². \n"+
+						"Axis x is "+SensorListener.movementDirection[0]+" m/s². \n"+
+						"Axis y is "+SensorListener.movementDirection[1]+" m/s². \n"+
+						"Axis z is "+SensorListener.movementDirection[2]+" m/s². \n";	
+			}
+			if(option.equals("Accelerometer"))
+				text+="Measuring the accelerometer on x,y and z axis in m/s². \n"+
+				    	"Axis x is "+SensorListener.accelerometer[0]+" m/s². \n"+
+				    	"Axis y is "+SensorListener.accelerometer[1]+" m/s². \n"+
+				    	"Axis z is "+SensorListener.accelerometer[2]+" m/s². \n";
+			if(option.equals("Magnet"))
+				text+="Measuring the magnetic filed which is measured in micro Tesla on the x, y and z axis. \n"+
+				    	"X value is "+SensorListener.magnet[0]+" micro Tesla, \n"+
+				    	"Y value is "+SensorListener.magnet[1]+" micro Tesla, \n"+
+				    	"Z value is "+SensorListener.magnet[2]+" micro Tesla. \n";
+			if(option.equals("Direction"))
+				text+="Measuring the direction on x,y and z axis in m/s². \n"+
+				    	"Axis x is "+SensorListener.movementDirection[0]+" m/s². \n"+
+				    	"Axis y is "+SensorListener.movementDirection[1]+" m/s². \n"+
+				    	"Axis z is "+SensorListener.movementDirection[2]+" m/s². \n";		 				
+			if(option.equals("Air Pressure"))
+				text+="Measuring the air pressure in the room in millibar. \n"+
+				    	"The air pressure in the room is "+SensorListener.pressure+" millibar. \n";		 					
+			if(option.equals("Temperature"))
+				text+="Measuring the temperature in Celsius.\n"+
+				    	"The temperature is "+SensorListener.temperature+" degrees Celsius. \n";					
+			if(option.equals("Light"))
+				text+="Measuring light in SI lux. \n"+
+				    	"Light is "+SensorListener.light+" SI lux. \n";				
+			if(option.equals("Microphone") && androidSensor.speechEnabled){
+				text+="The user recorded something, the following was understood: \n"; 
+				for(String temp : androidSensor.speechResults)
+					text+=temp+" ";
+			}
+			if(option.equals("Camera")){
+			}
+			if(option.equals("GPS"))
+				text+="Trying to locate the user.\n"+
+				    	"The Location was provided by "+AndroidLocationListener.locationInfo.getProvider()+", \n"+
+				    	"The Longitudinal value is "+AndroidLocationListener.locationInfo.getLongitude()+", \n"+
+				    	"The Latitudinal value is "+AndroidLocationListener.locationInfo.getLatitude()+". \n";	
+			tv.setText(text);
+			view=true;
+			androidSensor.updateView(ll);
+		}}});
+	}
+	
 	public void run() {
 		for(String option: outputOptions){
 			if(option.equals("XML"))
 				generateXML();
-			if(option.equals("View")) //Vidovic will do this 
-				;
+			if(option.equals("View"))
+				view=true;
 			if(option.equals("Dialog")) //Vidovic will do this
 				;
 			if(option.equals("Audiofile"))
@@ -594,9 +659,22 @@ public class Coordinator implements Runnable{
 				generateFile();
 			if(option.equals("Internet"))
 				generateHTML();
+				
 		}
 		if(sms)
 			generateSMS();
-		androidSensor.revoke();
+		if(view)
+		{
+			Timer updateTimer=new Timer("sensorUpdate");
+			updateTimer.scheduleAtFixedRate(new TimerTask() {
+
+				@Override
+				public void run() {
+					generateView();		
+				}
+			}, 0, 100);
+		}
+		else
+			androidSensor.revoke();
 	}
 }

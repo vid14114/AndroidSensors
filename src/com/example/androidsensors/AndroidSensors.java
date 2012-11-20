@@ -47,6 +47,11 @@ public class AndroidSensors extends Activity{
      * When the user clicks on ok, on the input methods menu
      * @param view
      */
+    
+    public void updateView(View view)
+    {
+    	setContentView(view);
+    }
     public void inputStart(View view){
     	inputOptions.clear();
     	int first = R.id.movementCB;
